@@ -1,12 +1,24 @@
 local TweenService = game:GetService("TweenService")
-
+local MarketplaceService = game:GetService("MarketplaceService")
 local Player = game.Players.LocalPlayer
+
+-- Safely get game name
+local success, info = pcall(function()
+	return MarketplaceService:GetProductInfo(game.PlaceId)
+end)
+
+local gameName = "Unknown"
+if success and info then
+	gameName = info.Name
+end
+
+-- Create GUI
 local ScreenGui = Instance.new("ScreenGui", Player:WaitForChild("PlayerGui"))
 ScreenGui.Name = "CustomTabUI"
 
 -- Main Frame
 local MainFrame = Instance.new("Frame", ScreenGui)
-MainFrame.Size = UDim2.new(0, 450, 0, 300)
+MainFrame.Size = UDim2.new(0, 600, 0, 400)
 MainFrame.Position = UDim2.new(0.5, -225, 0.5, -150)
 MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 MainFrame.BorderSizePixel = 0
@@ -15,9 +27,9 @@ MainFrame.Draggable = true
 
 -- Title Bar
 local TitleBar = Instance.new("TextLabel", MainFrame)
-TitleBar.Size = UDim2.new(1, 0, 0, 30)
+TitleBar.Size = UDim2.new(1, 0, 0, 40)
 TitleBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-TitleBar.Text = "Nebula X Hub"
+TitleBar.Text = "Nebula Hub | Game: " .. gameName .. " | Version [BETA]"
 TitleBar.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleBar.Font = Enum.Font.GothamBold
 TitleBar.TextSize = 16
@@ -31,9 +43,9 @@ ControlHolder.Position = UDim2.new(1, -90, 0, 0)
 ControlHolder.BackgroundTransparency = 1
 
 -- Size states
-local originalSize = UDim2.new(0, 450, 0, 300)
-local minimizedSize = UDim2.new(0, 450, 0, 30)
-local expandedSize = UDim2.new(0, 600, 0, 400)
+local originalSize = UDim2.new(0, 600, 0, 400)
+local minimizedSize = UDim2.new(0, 600, 0, 40)
+local expandedSize = UDim2.new(0, 900, 0, 650)
 
 -- State trackers
 local isMinimized = false
@@ -57,8 +69,50 @@ ContentArea.BorderSizePixel = 0
 local Tabs = {
 	Home = "Welcome to Nebula X!",
 	Scripts = "Script Hub Coming Soon...",
-	Settings = "Adjust your preferences here."
+	Settings = "Adjust your preferences here.",
+	Example = "This is the example tab with the toggle."
 }
+
+-- Toggle Container
+local ToggleFrame = Instance.new("Frame", MainFrame)
+ToggleFrame.Size = UDim2.new(0, 200, 0, 50)
+ToggleFrame.Position = UDim2.new(0, 120, 0, 60)
+ToggleFrame.BackgroundTransparency = 1
+ToggleFrame.Visible = false -- Hide initially
+
+-- Label for Toggle
+local ToggleLabel = Instance.new("TextLabel", ToggleFrame)
+ToggleLabel.Size = UDim2.new(0, 200, 0, 25)
+ToggleLabel.Position = UDim2.new(0, 0, 0, 0)
+ToggleLabel.Text = "Feature Toggle"
+ToggleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleLabel.Font = Enum.Font.Gotham
+ToggleLabel.TextSize = 16
+ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
+ToggleLabel.BackgroundTransparency = 1
+
+-- Toggle Button
+local ToggleButton = Instance.new("TextButton", ToggleFrame)
+ToggleButton.Size = UDim2.new(0, 60, 0, 25)
+ToggleButton.Position = UDim2.new(0, 140, 0, 0)
+ToggleButton.Text = "Off"
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+ToggleButton.Font = Enum.Font.GothamBold
+ToggleButton.TextSize = 14
+ToggleButton.BorderSizePixel = 0
+
+local isToggledOn = false
+ToggleButton.MouseButton1Click:Connect(function()
+	if isToggledOn then
+		ToggleButton.Text = "Off"
+		ToggleButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+	else
+		ToggleButton.Text = "On"
+		ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+	end
+	isToggledOn = not isToggledOn
+end)
 
 -- Create Tabs
 local index = 0
@@ -92,7 +146,14 @@ for tabName, tabContent in pairs(Tabs) do
 				child.Visible = false
 			end
 		end
-		ContentArea:FindFirstChild("Tab_" .. tabName).Visible = true
+
+		local targetTab = ContentArea:FindFirstChild("Tab_" .. tabName)
+		if targetTab then
+			targetTab.Visible = true
+		end
+
+		-- Only show toggle in "Example" tab if not minimized
+		ToggleFrame.Visible = (tabName == "Example" and not isMinimized)
 	end)
 
 	if index == 0 then
@@ -122,11 +183,19 @@ createControlButton("_", 0, Color3.fromRGB(50, 50, 50), function()
 		MainFrame:TweenSize(originalSize, Enum.EasingDirection.Out, Enum.EasingStyle.Sine, 0.5, true)
 		TabButtons.Visible = true
 		ContentArea.Visible = true
+		-- Show toggle again if Example tab is active
+		for _, label in ipairs(ContentArea:GetChildren()) do
+			if label:IsA("TextLabel") and label.Visible and label.Name == "Tab_Example" then
+				ToggleFrame.Visible = true
+				break
+			end
+		end
 		isMinimized = false
 	else
 		MainFrame:TweenSize(minimizedSize, Enum.EasingDirection.Out, Enum.EasingStyle.Sine, 0.5, true)
 		TabButtons.Visible = false
 		ContentArea.Visible = false
+		ToggleFrame.Visible = false
 		isMinimized = true
 	end
 end)
@@ -136,11 +205,9 @@ createControlButton("O", 30, Color3.fromRGB(60, 60, 60), function()
 	local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 
 	if isExpanded then
-		-- Restore to original size with animation
 		MainFrame:TweenSize(originalSize, Enum.EasingDirection.Out, Enum.EasingStyle.Sine, 0.5, true)
 		isExpanded = false
 	else
-		-- Expand to larger size with animation
 		MainFrame:TweenSize(expandedSize, Enum.EasingDirection.Out, Enum.EasingStyle.Back, 0.5, true)
 		isExpanded = true
 	end
@@ -149,49 +216,4 @@ end)
 -- X Close
 createControlButton("X", 60, Color3.fromRGB(120, 40, 40), function()
 	ScreenGui:Destroy()
-end)
-
--- Toggle Container
-local ToggleFrame = Instance.new("Frame", MainFrame)
-ToggleFrame.Size = UDim2.new(0, 200, 0, 50)
-ToggleFrame.Position = UDim2.new(0, 120, 0, 60)
-ToggleFrame.BackgroundTransparency = 1
-
--- Label for Toggle
-local ToggleLabel = Instance.new("TextLabel", ToggleFrame)
-ToggleLabel.Size = UDim2.new(0, 200, 0, 25)
-ToggleLabel.Position = UDim2.new(0, 0, 0, 0)
-ToggleLabel.Text = "Feature Toggle"
-ToggleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleLabel.Font = Enum.Font.Gotham
-ToggleLabel.TextSize = 16
-ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
-ToggleLabel.BackgroundTransparency = 1
-
--- Toggle Button (Off initially)
-local ToggleButton = Instance.new("TextButton", ToggleFrame)
-ToggleButton.Size = UDim2.new(0, 60, 0, 25)
-ToggleButton.Position = UDim2.new(0, 140, 0, 0)
-ToggleButton.Text = "Off"
-ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-ToggleButton.Font = Enum.Font.GothamBold
-ToggleButton.TextSize = 14
-ToggleButton.BorderSizePixel = 0
-
--- Toggle states
-local isToggledOn = false
-
--- Toggle function
-ToggleButton.MouseButton1Click:Connect(function()
-    if isToggledOn then
-        ToggleButton.Text = "Off"
-        ToggleButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-        -- Add actions for "Off" state here
-    else
-        ToggleButton.Text = "On"
-        ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-        -- Add actions for "On" state here
-    end
-    isToggledOn = not isToggledOn
 end)
