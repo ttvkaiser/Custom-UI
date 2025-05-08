@@ -1,3 +1,5 @@
+local TweenService = game:GetService("TweenService")
+
 local Player = game.Players.LocalPlayer
 local ScreenGui = Instance.new("ScreenGui", Player:WaitForChild("PlayerGui"))
 ScreenGui.Name = "CustomTabUI"
@@ -114,35 +116,82 @@ local function createControlButton(symbol, offset, color, callback)
 	btn.MouseButton1Click:Connect(callback)
 end
 
--- _ Toggle Minimize
+-- _ Toggle Minimize and Restore
 createControlButton("_", 0, Color3.fromRGB(50, 50, 50), function()
-	if not isMinimized then
-		MainFrame.Size = minimizedSize
-		TabButtons.Visible = false
-		ContentArea.Visible = false
-		isMinimized = true
-		isExpanded = false
-	else
-		MainFrame.Size = originalSize
+	if isMinimized then
+		MainFrame:TweenSize(originalSize, Enum.EasingDirection.Out, Enum.EasingStyle.Sine, 0.5, true)
 		TabButtons.Visible = true
 		ContentArea.Visible = true
 		isMinimized = false
+	else
+		MainFrame:TweenSize(minimizedSize, Enum.EasingDirection.Out, Enum.EasingStyle.Sine, 0.5, true)
+		TabButtons.Visible = false
+		ContentArea.Visible = false
+		isMinimized = true
 	end
 end)
 
--- O Toggle Expand
+-- O Toggle Expand and Restore with Animation
 createControlButton("O", 30, Color3.fromRGB(60, 60, 60), function()
-	if not isExpanded then
-		MainFrame.Size = expandedSize
-		isExpanded = true
-		isMinimized = false
-	else
-		MainFrame.Size = originalSize
+	local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+
+	if isExpanded then
+		-- Restore to original size with animation
+		MainFrame:TweenSize(originalSize, Enum.EasingDirection.Out, Enum.EasingStyle.Sine, 0.5, true)
 		isExpanded = false
+	else
+		-- Expand to larger size with animation
+		MainFrame:TweenSize(expandedSize, Enum.EasingDirection.Out, Enum.EasingStyle.Back, 0.5, true)
+		isExpanded = true
 	end
 end)
 
 -- X Close
 createControlButton("X", 60, Color3.fromRGB(120, 40, 40), function()
 	ScreenGui:Destroy()
+end)
+
+-- Toggle Container
+local ToggleFrame = Instance.new("Frame", MainFrame)
+ToggleFrame.Size = UDim2.new(0, 200, 0, 50)
+ToggleFrame.Position = UDim2.new(0, 120, 0, 60)
+ToggleFrame.BackgroundTransparency = 1
+
+-- Label for Toggle
+local ToggleLabel = Instance.new("TextLabel", ToggleFrame)
+ToggleLabel.Size = UDim2.new(0, 200, 0, 25)
+ToggleLabel.Position = UDim2.new(0, 0, 0, 0)
+ToggleLabel.Text = "Feature Toggle"
+ToggleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleLabel.Font = Enum.Font.Gotham
+ToggleLabel.TextSize = 16
+ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
+ToggleLabel.BackgroundTransparency = 1
+
+-- Toggle Button (Off initially)
+local ToggleButton = Instance.new("TextButton", ToggleFrame)
+ToggleButton.Size = UDim2.new(0, 60, 0, 25)
+ToggleButton.Position = UDim2.new(0, 140, 0, 0)
+ToggleButton.Text = "Off"
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+ToggleButton.Font = Enum.Font.GothamBold
+ToggleButton.TextSize = 14
+ToggleButton.BorderSizePixel = 0
+
+-- Toggle states
+local isToggledOn = false
+
+-- Toggle function
+ToggleButton.MouseButton1Click:Connect(function()
+    if isToggledOn then
+        ToggleButton.Text = "Off"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        -- Add actions for "Off" state here
+    else
+        ToggleButton.Text = "On"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+        -- Add actions for "On" state here
+    end
+    isToggledOn = not isToggledOn
 end)
