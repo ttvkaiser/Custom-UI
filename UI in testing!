@@ -1,0 +1,129 @@
+local Player = game.Players.LocalPlayer
+local ScreenGui = Instance.new("ScreenGui", Player:WaitForChild("PlayerGui"))
+ScreenGui.Name = "CustomTabUI"
+
+-- Main Frame
+local MainFrame = Instance.new("Frame", ScreenGui)
+MainFrame.Size = UDim2.new(0, 450, 0, 300)
+MainFrame.Position = UDim2.new(0.5, -225, 0.5, -150)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+-- Title Bar
+local TitleBar = Instance.new("TextLabel", MainFrame)
+TitleBar.Size = UDim2.new(1, 0, 0, 30)
+TitleBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+TitleBar.Text = "Nebula X Hub"
+TitleBar.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleBar.Font = Enum.Font.GothamBold
+TitleBar.TextSize = 16
+TitleBar.TextXAlignment = Enum.TextXAlignment.Left
+TitleBar.BorderSizePixel = 0
+
+-- Controls container
+local ControlHolder = Instance.new("Frame", TitleBar)
+ControlHolder.Size = UDim2.new(0, 90, 1, 0)
+ControlHolder.Position = UDim2.new(1, -90, 0, 0)
+ControlHolder.BackgroundTransparency = 1
+
+-- Original/minimized sizes
+local originalSize = UDim2.new(0, 450, 0, 300)
+local minimizedSize = UDim2.new(0, 450, 0, 30)
+
+-- Tab Buttons Container
+local TabButtons = Instance.new("Frame", MainFrame)
+TabButtons.Size = UDim2.new(0, 120, 1, -30)
+TabButtons.Position = UDim2.new(0, 0, 0, 30)
+TabButtons.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+TabButtons.BorderSizePixel = 0
+
+-- Content Area
+local ContentArea = Instance.new("Frame", MainFrame)
+ContentArea.Size = UDim2.new(1, -120, 1, -30)
+ContentArea.Position = UDim2.new(0, 120, 0, 30)
+ContentArea.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+ContentArea.BorderSizePixel = 0
+
+-- Tabs Table
+local Tabs = {
+	Home = "Welcome to Nebula X!",
+	Scripts = "Script Hub Coming Soon...",
+	Settings = "Adjust your preferences here."
+}
+
+-- Create Tabs
+local index = 0
+for tabName, tabContent in pairs(Tabs) do
+	local Button = Instance.new("TextButton", TabButtons)
+	Button.Size = UDim2.new(1, 0, 0, 40)
+	Button.Position = UDim2.new(0, 0, 0, index * 40)
+	Button.Text = tabName
+	Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Button.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+	Button.Font = Enum.Font.Gotham
+	Button.TextSize = 14
+	Button.BorderSizePixel = 0
+
+	local ContentLabel = Instance.new("TextLabel")
+	ContentLabel.Size = UDim2.new(1, 0, 1, 0)
+	ContentLabel.Position = UDim2.new(0, 0, 0, 0)
+	ContentLabel.BackgroundTransparency = 1
+	ContentLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+	ContentLabel.Font = Enum.Font.Gotham
+	ContentLabel.TextSize = 16
+	ContentLabel.TextWrapped = true
+	ContentLabel.Text = tabContent
+	ContentLabel.Visible = false
+	ContentLabel.Name = "Tab_" .. tabName
+	ContentLabel.Parent = ContentArea
+
+	Button.MouseButton1Click:Connect(function()
+		for _, child in pairs(ContentArea:GetChildren()) do
+			if child:IsA("TextLabel") then
+				child.Visible = false
+			end
+		end
+		ContentArea:FindFirstChild("Tab_" .. tabName).Visible = true
+	end)
+
+	if index == 0 then
+		ContentLabel.Visible = true
+	end
+
+	index += 1
+end
+
+-- Control Buttons
+local function createControlButton(symbol, offset, color, callback)
+	local btn = Instance.new("TextButton", ControlHolder)
+	btn.Size = UDim2.new(0, 30, 1, 0)
+	btn.Position = UDim2.new(0, offset, 0, 0)
+	btn.BackgroundColor3 = color
+	btn.Text = symbol
+	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	btn.Font = Enum.Font.GothamBold
+	btn.TextSize = 18
+	btn.BorderSizePixel = 0
+	btn.MouseButton1Click:Connect(callback)
+end
+
+-- Minimize
+createControlButton("_", 0, Color3.fromRGB(50, 50, 50), function()
+	MainFrame.Size = minimizedSize
+	TabButtons.Visible = false
+	ContentArea.Visible = false
+end)
+
+-- Expand
+createControlButton("O", 30, Color3.fromRGB(60, 60, 60), function()
+	MainFrame.Size = originalSize
+	TabButtons.Visible = true
+	ContentArea.Visible = true
+end)
+
+-- Close
+createControlButton("X", 60, Color3.fromRGB(120, 40, 40), function()
+	ScreenGui:Destroy()
+end)
