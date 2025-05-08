@@ -28,9 +28,14 @@ ControlHolder.Size = UDim2.new(0, 90, 1, 0)
 ControlHolder.Position = UDim2.new(1, -90, 0, 0)
 ControlHolder.BackgroundTransparency = 1
 
--- Original/minimized sizes
+-- Size states
 local originalSize = UDim2.new(0, 450, 0, 300)
 local minimizedSize = UDim2.new(0, 450, 0, 30)
+local expandedSize = UDim2.new(0, 600, 0, 400)
+
+-- State trackers
+local isMinimized = false
+local isExpanded = false
 
 -- Tab Buttons Container
 local TabButtons = Instance.new("Frame", MainFrame)
@@ -109,21 +114,35 @@ local function createControlButton(symbol, offset, color, callback)
 	btn.MouseButton1Click:Connect(callback)
 end
 
--- Minimize
+-- _ Toggle Minimize
 createControlButton("_", 0, Color3.fromRGB(50, 50, 50), function()
-	MainFrame.Size = minimizedSize
-	TabButtons.Visible = false
-	ContentArea.Visible = false
+	if not isMinimized then
+		MainFrame.Size = minimizedSize
+		TabButtons.Visible = false
+		ContentArea.Visible = false
+		isMinimized = true
+		isExpanded = false
+	else
+		MainFrame.Size = originalSize
+		TabButtons.Visible = true
+		ContentArea.Visible = true
+		isMinimized = false
+	end
 end)
 
--- Expand
+-- O Toggle Expand
 createControlButton("O", 30, Color3.fromRGB(60, 60, 60), function()
-	MainFrame.Size = originalSize
-	TabButtons.Visible = true
-	ContentArea.Visible = true
+	if not isExpanded then
+		MainFrame.Size = expandedSize
+		isExpanded = true
+		isMinimized = false
+	else
+		MainFrame.Size = originalSize
+		isExpanded = false
+	end
 end)
 
--- Close
+-- X Close
 createControlButton("X", 60, Color3.fromRGB(120, 40, 40), function()
 	ScreenGui:Destroy()
 end)
