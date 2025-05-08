@@ -4,12 +4,12 @@ local Player = game.Players.LocalPlayer
 
 -- Safely get game name
 local success, info = pcall(function()
-	return MarketplaceService:GetProductInfo(game.PlaceId)
+    return MarketplaceService:GetProductInfo(game.PlaceId)
 end)
 
 local gameName = "Unknown"
 if success and info then
-	gameName = info.Name
+    gameName = info.Name
 end
 
 -- Create GUI
@@ -65,12 +65,12 @@ ContentArea.Position = UDim2.new(0, 120, 0, 30)
 ContentArea.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 ContentArea.BorderSizePixel = 0
 
--- Tabs Table
+-- Ordered Tabs List
 local Tabs = {
-	Home = "Welcome to Nebula X!",
-	Scripts = "Script Hub Coming Soon...",
-	Settings = "Adjust your preferences here.",
-	Example = "This is the example tab with the toggle."
+    { Name = "Home", Content = "Welcome to Nebula X!" },
+    { Name = "Scripts", Content = "Script Hub Coming Soon..." },
+    { Name = "Settings", Content = "Adjust your preferences here." },
+    { Name = "Example", Content = "This is the example tab with the toggle." }
 }
 
 -- Toggle Container
@@ -104,116 +104,113 @@ ToggleButton.BorderSizePixel = 0
 
 local isToggledOn = false
 ToggleButton.MouseButton1Click:Connect(function()
-	if isToggledOn then
-		ToggleButton.Text = "Off"
-		ToggleButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-	else
-		ToggleButton.Text = "On"
-		ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-	end
-	isToggledOn = not isToggledOn
+    if isToggledOn then
+        ToggleButton.Text = "Off"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    else
+        ToggleButton.Text = "On"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+    end
+    isToggledOn = not isToggledOn
 end)
 
 -- Create Tabs
-local index = 0
-for tabName, tabContent in pairs(Tabs) do
-	local Button = Instance.new("TextButton", TabButtons)
-	Button.Size = UDim2.new(1, 0, 0, 40)
-	Button.Position = UDim2.new(0, 0, 0, index * 40)
-	Button.Text = tabName
-	Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-	Button.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-	Button.Font = Enum.Font.Gotham
-	Button.TextSize = 14
-	Button.BorderSizePixel = 0
+for index, tab in ipairs(Tabs) do
+    local Button = Instance.new("TextButton", TabButtons)
+    Button.Size = UDim2.new(1, 0, 0, 40)
+    Button.Position = UDim2.new(0, 0, 0, (index - 1) * 40)
+    Button.Text = tab.Name
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    Button.Font = Enum.Font.Gotham
+    Button.TextSize = 14
+    Button.BorderSizePixel = 0
 
-	local ContentLabel = Instance.new("TextLabel")
-	ContentLabel.Size = UDim2.new(1, 0, 1, 0)
-	ContentLabel.Position = UDim2.new(0, 0, 0, 0)
-	ContentLabel.BackgroundTransparency = 1
-	ContentLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-	ContentLabel.Font = Enum.Font.Gotham
-	ContentLabel.TextSize = 16
-	ContentLabel.TextWrapped = true
-	ContentLabel.Text = tabContent
-	ContentLabel.Visible = false
-	ContentLabel.Name = "Tab_" .. tabName
-	ContentLabel.Parent = ContentArea
+    local ContentLabel = Instance.new("TextLabel")
+    ContentLabel.Size = UDim2.new(1, 0, 1, 0)
+    ContentLabel.Position = UDim2.new(0, 0, 0, 0)
+    ContentLabel.BackgroundTransparency = 1
+    ContentLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ContentLabel.Font = Enum.Font.Gotham
+    ContentLabel.TextSize = 16
+    ContentLabel.TextWrapped = true
+    ContentLabel.Text = tab.Content
+    ContentLabel.Visible = false
+    ContentLabel.Name = "Tab_" .. tab.Name
+    ContentLabel.Parent = ContentArea
 
-	Button.MouseButton1Click:Connect(function()
-		for _, child in pairs(ContentArea:GetChildren()) do
-			if child:IsA("TextLabel") then
-				child.Visible = false
-			end
-		end
+    Button.MouseButton1Click:Connect(function()
+        for _, child in pairs(ContentArea:GetChildren()) do
+            if child:IsA("TextLabel") then
+                child.Visible = false
+            end
+        end
 
-		local targetTab = ContentArea:FindFirstChild("Tab_" .. tabName)
-		if targetTab then
-			targetTab.Visible = true
-		end
+        local targetTab = ContentArea:FindFirstChild("Tab_" .. tab.Name)
+        if targetTab then
+            targetTab.Visible = true
+        end
 
-		-- Only show toggle in "Example" tab if not minimized
-		ToggleFrame.Visible = (tabName == "Example" and not isMinimized)
-	end)
+        -- Only show toggle in "Example" tab if not minimized
+        ToggleFrame.Visible = (tab.Name == "Example" and not isMinimized)
+    end)
 
-	if index == 0 then
-		ContentLabel.Visible = true
-	end
-
-	index += 1
+    if index == 1 then
+        ContentLabel.Visible = true
+    end
 end
 
 -- Control Buttons
 local function createControlButton(symbol, offset, color, callback)
-	local btn = Instance.new("TextButton", ControlHolder)
-	btn.Size = UDim2.new(0, 30, 1, 0)
-	btn.Position = UDim2.new(0, offset, 0, 0)
-	btn.BackgroundColor3 = color
-	btn.Text = symbol
-	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-	btn.Font = Enum.Font.GothamBold
-	btn.TextSize = 18
-	btn.BorderSizePixel = 0
-	btn.MouseButton1Click:Connect(callback)
+    local btn = Instance.new("TextButton", ControlHolder)
+    btn.Size = UDim2.new(0, 30, 1, 0)
+    btn.Position = UDim2.new(0, offset, 0, 0)
+    btn.BackgroundColor3 = color
+    btn.Text = symbol
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 18
+    btn.BorderSizePixel = 0
+    btn.MouseButton1Click:Connect(callback)
 end
 
 -- _ Toggle Minimize and Restore
 createControlButton("_", 0, Color3.fromRGB(50, 50, 50), function()
-	if isMinimized then
-		MainFrame:TweenSize(originalSize, Enum.EasingDirection.Out, Enum.EasingStyle.Sine, 0.5, true)
-		TabButtons.Visible = true
-		ContentArea.Visible = true
-		-- Show toggle again if Example tab is active
-		for _, label in ipairs(ContentArea:GetChildren()) do
-			if label:IsA("TextLabel") and label.Visible and label.Name == "Tab_Example" then
-				ToggleFrame.Visible = true
-				break
-			end
-		end
-		isMinimized = false
-	else
-		MainFrame:TweenSize(minimizedSize, Enum.EasingDirection.Out, Enum.EasingStyle.Sine, 0.5, true)
-		TabButtons.Visible = false
-		ContentArea.Visible = false
-		ToggleFrame.Visible = false
-		isMinimized = true
-	end
+    if isMinimized then
+        MainFrame:TweenSize(originalSize, Enum.EasingDirection.Out, Enum.EasingStyle.Sine, 0.5, true)
+        TabButtons.Visible = true
+        ContentArea.Visible = true
+        -- Show toggle again if Example tab is active
+        for _, label in ipairs(ContentArea:GetChildren()) do
+            if label:IsA("TextLabel") and label.Visible and label.Name == "Tab_Example" then
+                ToggleFrame.Visible = true
+                break
+            end
+        end
+        isMinimized = false
+    else
+        MainFrame:TweenSize(minimizedSize, Enum.EasingDirection.Out, Enum.EasingStyle.Sine, 0.5, true)
+        TabButtons.Visible = false
+        ContentArea.Visible = false
+        ToggleFrame.Visible = false
+        isMinimized = true
+    end
 end)
 
 -- O Toggle Expand and Restore with Animation
 createControlButton("O", 30, Color3.fromRGB(60, 60, 60), function()
-	local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 
-	if isExpanded then
-		MainFrame:TweenSize(originalSize, Enum.EasingDirection.Out, Enum.EasingStyle.Sine, 0.5, true)
-		isExpanded = false
-	else
-		MainFrame:TweenSize(expandedSize, Enum.EasingDirection.Out, Enum.EasingStyle.Back, 0.5, true)
-		isExpanded = true
-	end
+    if isExpanded then
+        MainFrame:TweenSize(originalSize, Enum.EasingDirection.Out, Enum.EasingStyle.Sine, 0.5, true)
+        isExpanded = false
+    else
+        MainFrame:TweenSize(expandedSize, Enum.EasingDirection.Out, Enum.EasingStyle.Back, 0.5, true)
+        isExpanded = true
+    end
 end)
 
 -- X Close
 createControlButton("X", 60, Color3.fromRGB(120, 40, 40), function()
-	ScreenGui:Destroy()
+ScreenGui:Destroy()
 end)
