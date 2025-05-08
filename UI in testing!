@@ -13,8 +13,10 @@ if success and info then
 end
 
 -- Create GUI
-local ScreenGui = Instance.new("ScreenGui", Player:WaitForChild("PlayerGui"))
+local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "CustomTabUI"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = game:GetService("CoreGui")
 
 -- Main Frame
 local MainFrame = Instance.new("Frame", ScreenGui)
