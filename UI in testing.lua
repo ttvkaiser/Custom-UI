@@ -44,7 +44,7 @@ addCorner(MainFrame, 8)
 local TitleBar = Instance.new("TextLabel", MainFrame)
 TitleBar.Size = UDim2.new(1, 0, 0, 40)
 TitleBar.BackgroundColor3 = ColorDarkPurple
-TitleBar.Text = "Nebula Hub | Game: " .. gameName .. " | Version [BETA]"
+TitleBar.Text = "Nebula Hub | Game: " .. gameName .. " | Version 0.1.1"
 TitleBar.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleBar.Font = Enum.Font.GothamBold
 TitleBar.TextSize = 16
@@ -100,7 +100,7 @@ ToggleFrame.Visible = false
 local SectionTitle = Instance.new("TextLabel", ToggleFrame)
 SectionTitle.Size = UDim2.new(1, 0, 0, 20)
 SectionTitle.Position = UDim2.new(0, 0, 0, 0)
-SectionTitle.Text = "Local Player"
+SectionTitle.Text = "Local Player Configuration"
 SectionTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 SectionTitle.Font = Enum.Font.GothamBold
 SectionTitle.TextSize = 16
