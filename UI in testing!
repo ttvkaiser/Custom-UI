@@ -69,10 +69,15 @@ ContentArea.BorderSizePixel = 0
 
 -- Ordered Tabs List
 local Tabs = {
-    { Name = "Home", Content = "Welcome to Nebula X!" },
-    { Name = "Scripts", Content = "Script Hub Coming Soon..." },
-    { Name = "Settings", Content = "Adjust your preferences here." },
-    { Name = "Example", Content = "This is the example tab with the toggle." }
+    { Name = "Home"},
+    { Name = "Main"},
+    { Name = "Automaticlly"},
+    { Name = "Inventory"},
+    { Name = "Shop"},
+    { Name = "Quest"},
+    { Name = "Teleport"},
+    { Name = "Settings"},
+    { Name = "Miscellaneous"},
 }
 
 -- Toggle Container
@@ -154,7 +159,7 @@ for index, tab in ipairs(Tabs) do
         end
 
         -- Only show toggle in "Example" tab if not minimized
-        ToggleFrame.Visible = (tab.Name == "Example" and not isMinimized)
+        ToggleFrame.Visible = (tab.Name == "Home" and not isMinimized)
     end)
 
     if index == 1 then
@@ -200,7 +205,7 @@ createControlButton("_", 0, Color3.fromRGB(50, 50, 50), function()
 end)
 
 -- O Toggle Expand and Restore with Animation
-createControlButton("O", 30, Color3.fromRGB(60, 60, 60), function()
+createControlButton("▢", 30, Color3.fromRGB(60, 60, 60), function()
     local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 
     if isExpanded then
