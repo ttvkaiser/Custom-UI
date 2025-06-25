@@ -982,6 +982,105 @@ Tabs.Misc:CreateToggle("HidePets", {Title = "Hide Pets", Default = false}):OnCha
     end
 end)
 
+Tabs.Misc:CreateSection("Game Enhancers")
+
+-- Anti AFK Button
+Tabs.Misc:CreateButton({
+    Title = "Anti AFK",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Moha-space/SPACE-HUB-/refs/heads/main/MAIN%20AINTI%20AFK%20.txt"))()
+    end
+})
+
+Tabs.Misc:CreateButton{
+    Title = "Instant FPS Boost",
+    Description = "Clears effects and boosts performance immediately.",
+    Callback = function()
+        -- Disable laggy visual effects
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Smoke") or obj:IsA("Fire") then
+                obj.Enabled = false
+            elseif obj:IsA("Explosion") then
+                obj:Destroy()
+            end
+        end
+
+        -- Remove decals/textures
+        for _, v in pairs(game:GetDescendants()) do
+            if v:IsA("Decal") or v:IsA("Texture") then
+                v:Destroy()
+            end
+        end
+
+        -- Lower graphics quality
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+
+        -- Turn off terrain decorations if available
+        if workspace:FindFirstChildOfClass("Terrain") then
+            workspace.Terrain.Decorations = false
+        end
+
+        -- Force garbage collection
+        collectgarbage("collect")
+
+        print("[Nebula Hub] Performance Boost Applied ✔️")
+    end
+}
+
+Tabs.Misc:CreateButton{
+    Title = "No Lag",
+    Description = "Instantly removes lag by cleaning visuals, effects, and more.",
+    Callback = function()
+        -- Disable visual effects
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Smoke") or obj:IsA("Fire") or obj:IsA("Sparkles") then
+                obj.Enabled = false
+            elseif obj:IsA("Explosion") then
+                obj:Destroy()
+            elseif obj:IsA("Decal") or obj:IsA("Texture") then
+                obj:Destroy()
+            elseif obj:IsA("Lighting") then
+                obj:Destroy()
+            end
+        end
+
+        -- Lower graphics quality
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+
+        -- Disable terrain decoration
+        if workspace:FindFirstChildOfClass("Terrain") then
+            workspace.Terrain.Decorations = false
+        end
+
+        -- Remove sounds
+        for _, s in pairs(workspace:GetDescendants()) do
+            if s:IsA("Sound") then
+                s:Destroy()
+            end
+        end
+
+        -- Remove accessories and clothing
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        for _, item in pairs(character:GetDescendants()) do
+            if item:IsA("Accessory") or item:IsA("Clothing") or item:IsA("ShirtGraphic") then
+                item:Destroy()
+            end
+        end
+
+        -- Disable global shadows and blur
+        local lighting = game:GetService("Lighting")
+        lighting.GlobalShadows = false
+        lighting.FogEnd = 100000
+        lighting.Blur = nil
+
+        -- Garbage collect memory
+        collectgarbage("collect")
+
+        print("[Nebula Hub] 🧹 No Lag Mode Activated")
+    end
+}
+
 -- Addons:
 -- SaveManager (Allows you to have a configuration system)
 -- InterfaceManager (Allows you to have a interface managment system)
