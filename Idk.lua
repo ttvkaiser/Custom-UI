@@ -849,7 +849,7 @@ Tabs.Misc:CreateButton({
     end
 })
 
-local Toggle = Tabs.Stats:CreateToggle("LockPosition", {
+local Toggle = Tabs.Misc:CreateToggle("LockPosition", {
     Title = "Lock Position",
     Default = false
 })
