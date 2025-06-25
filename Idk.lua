@@ -580,56 +580,52 @@ Tabs.Killing:CreateButton({
 
 local whitelist = {}
 
-local function getPlayerNames()
-    local names = {}
-    for _, player in ipairs(game.Players:GetPlayers()) do
-        table.insert(names, player.Name)
-    end
-    return names
-end
-
--- Wait for at least one player to exist before creating UI
-if #game.Players:GetPlayers() == 0 then
-    game.Players.PlayerAdded:Wait()
-end
-
-local WhitelistDropdown = Tabs.Killing:CreateDropdown({
-    Name = "WhitelistDropdown",
+Tabs.Killing:CreateInput("WhitelistBox", {
     Title = "Whitelist Player",
-    Values = getPlayerNames(),
-    Multi = true,
-    Default = 1,
-})
-
-print("Dropdown values:", table.concat(getPlayerNames(), ", "))
-
-WhitelistDropdown:OnChanged(function(Value)
-    if typeof(Value) == "table" then
-        for _, name in ipairs(Value) do
-            whitelist[name] = true
-            print("Whitelisted:", name)
+    Default = "",
+    Placeholder = "Enter username...",
+    Numeric = false,
+    Callback = function(text)
+        local target = game.Players:FindFirstChild(text)
+        if target then
+            whitelist[target.Name] = true
         end
     end
-end)
+})
 
-game.Players.PlayerAdded:Connect(function()
-    WhitelistDropdown:SetValues(getPlayerNames())
-end)
-
-game.Players.PlayerRemoving:Connect(function()
-    WhitelistDropdown:SetValues(getPlayerNames())
-end)
-
-local Toggle = Tabs.Killing:CreateToggle("AutoKilltoggle", {Title = "Auto Kill", Default = false })
+local Toggle = Tabs.Killing:CreateToggle("AutoKill", {Title = "Auto Kill", Default = false})
 
 Toggle:OnChanged(function(state)
     while state and Toggle.Value do
         local player = game.Players.LocalPlayer
+        local char = player.Character or game.Workspace:FindFirstChild(player.Name)
+
+        -- Equip Punch Tool
+        local punchTool = player.Backpack:FindFirstChild("Punch") or (char and char:FindFirstChild("Punch"))
+        if punchTool then
+            if punchTool.Parent ~= char then
+                punchTool.Parent = char
+                task.wait(0.1)
+            end
+
+            local attackTime = punchTool:FindFirstChild("attackTime")
+            if attackTime then
+                attackTime.Value = 0
+            end
+
+            punchTool:Activate()
+        else
+            warn("Punch tool not found")
+            Toggle:SetValue(false)
+            break
+        end
+
+        -- Damage all non-whitelisted players
         for _, target in ipairs(game.Players:GetPlayers()) do
             if target ~= player and not whitelist[target.Name] then
                 local root = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
-                local rHand = player.Character and player.Character:FindFirstChild("RightHand")
-                local lHand = player.Character and player.Character:FindFirstChild("LeftHand")
+                local rHand = char and char:FindFirstChild("RightHand")
+                local lHand = char and char:FindFirstChild("LeftHand")
 
                 if root and rHand and lHand then
                     firetouchinterest(rHand, root, 1)
@@ -639,6 +635,7 @@ Toggle:OnChanged(function(state)
                 end
             end
         end
+
         task.wait(0.1)
     end
 end)
