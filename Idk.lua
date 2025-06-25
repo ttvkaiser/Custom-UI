@@ -594,6 +594,42 @@ Tabs.Killing:CreateInput("WhitelistBox", {
     end
 })
 
+local whitelist = {}
+
+-- Get current players
+local function getPlayerNames()
+    local names = {}
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        table.insert(names, player.Name)
+    end
+    return names
+end
+
+-- Create dropdown with player names
+local WhitelostPlayerDropdown = Tabs.Killing:CreateDropdown("WhitelistDropdown", {
+    Title = "Whitelist Player",
+    Values = getPlayerNames(),
+    Multi = false,
+    Default = 1,
+})
+
+-- When selection changes, add to whitelist
+Dropdown:OnChanged(function(Value)
+    if Value then
+        whitelist[Value] = true
+        print("Whitelisted:", Value)
+    end
+end)
+
+-- Optional: Auto-update dropdown if players join/leave
+game.Players.PlayerAdded:Connect(function()
+    Dropdown:SetValues(getPlayerNames())
+end)
+
+game.Players.PlayerRemoving:Connect(function()
+    Dropdown:SetValues(getPlayerNames())
+end)
+
 -- Auto Kill Toggle
 local Toggle = Tabs.Killing:CreateToggle("AutoKill", {Title = "Auto Kill", Default = false})
 Toggle:OnChanged(function(state)
