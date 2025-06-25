@@ -3,7 +3,7 @@ local SaveManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.
 local InterfaceManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/InterfaceManager.luau"))()
  
 local Window = Library:CreateWindow{
-    Title = "Nebula Hub | Game: Muscle Legends | Version [v.2.1.7]",
+    Title = "Nebula Hub | Game: Muscle Legends | Version [v.2.6.2]",
     SubTitle = "by ttvkaiser",
     TabWidth = 160,
     Size = UDim2.fromOffset(1087, 690.5),
@@ -276,13 +276,95 @@ Toggle:OnChanged(function(state)
         task.wait()
     end
 end)
-
+--------------------------------------------------------------------
+--  SECTION - Auto Gym  
+--------------------------------------------------------------------
 Tabs.Main:AddSection("Auto Gym")
 
-local Paragraph = Tabs.Main:CreateParagraph("Paragraph", {
-    Title = "⟨⟨EMPTY⟩⟩",
-    Content = ""
+-- === 1. Data tables =========================================================
+local gymToTools = {                           -- what each gym contains
+    ["Jungle"] = {"Boulder", "Bench", "Squat", "Bar Lift"},
+    ["Muscle King"] = {"Boulder", "Bench", "Squat", "Dead Lift"},
+}
+
+local machineData = {                          -- CFrame + machine name
+    ["Jungle"] = {
+        Boulder   = {cf = CFrame.new(-8617,  37, 2677),   rName = "Jungle Boulder"},
+        Bench     = {cf = CFrame.new(-8629.88, 64.88, 1855.03), rName = "Jungle Bench"},
+        Squat     = {cf = CFrame.new(-8374.26, 34.59, 2932.45), rName = "Jungle Squat"},
+        ["Bar Lift"] = {cf = CFrame.new(-8678.06, 14.50, 2089.26), rName = "Jungle Bar Lift"},
+    },
+    ["Muscle King"] = {
+        Boulder    = {cf = CFrame.new(-8940.12, 13.16, -5699.13), rName = "King Boulder"},
+        Bench      = {cf = CFrame.new(-8590.06, 46.02, -6043.35), rName = "Muscle King Bench"},
+        Squat      = {cf = CFrame.new(-8759,    44,    -6044   ), rName = "Muscle King Squat"},
+        ["Dead Lift"] = {cf = CFrame.new(-8773,    50,    -5664   ), rName = "Muscle King Lift"},
+    }
+}
+
+-- === 2. UI widgets ==========================================================
+local SelectGymDropdown = Tabs.Main:CreateDropdown("SelectGym", {
+    Title   = "Select Gym",
+    Values  = {"Jungle", "Muscle King"},
+    Multi   = false,
+    Default = 1,
 })
+
+local SelectToolDropdown = Tabs.Main:CreateDropdown("SelectTool", {
+    Title   = "Select Tool",
+    Values  = gymToTools["Jungle"],            -- start with Jungle list
+    Multi   = false,
+    Default = 1,
+})
+
+-- change the tool list when the gym changes (if your Fluent build supports SetValues)
+SelectGymDropdown:OnChanged(function(newGym)
+    if SelectToolDropdown.SetValues then
+        SelectToolDropdown:SetValues(gymToTools[newGym])
+        SelectToolDropdown:SetValue(gymToTools[newGym][1]) -- reset to first entry
+    end
+end)
+
+local StartGymToggle = Tabs.Main:CreateToggle("MyToggle", {
+    Title   = "Auto Gym (choose both dropdowns first)",
+    Default = false
+})
+
+-- === 3. Automation loop =====================================================
+local runService = game:GetService("RunService")
+local loopConn   -- connection holder so we can disconnect cleanly
+
+StartGymToggle:OnChanged(function()
+    -- stop any previous loop
+    if loopConn then
+        loopConn:Disconnect()
+        loopConn = nil
+    end
+
+    if Options.MyToggle.Value then
+        loopConn = runService.Heartbeat:Connect(function()
+            local gym  = SelectGymDropdown.Value
+            local tool = SelectToolDropdown.Value
+            local info = machineData[gym] and machineData[gym][tool]
+            if not info then return end
+
+            local char = game.Players.LocalPlayer.Character
+            if not (char and char.PrimaryPart) then return end
+
+            -- teleport & fire the remote
+            char:SetPrimaryPartCFrame(info.cf)
+            game:GetService("ReplicatedStorage").rEvents.machineInteractRemote:InvokeServer(
+                "useMachine",
+                workspace.machinesFolder[info.rName].interactSeat
+            )
+        end)
+    end
+end)
+
+-- === 4. Optional: reset UI defaults =========================================
+SelectGymDropdown:SetValue("Jungle")
+SelectToolDropdown:SetValue("Boulder")
+Options.MyToggle:SetValue(false)
 
 Tabs.Main:AddSection("Auto Equip")
 
