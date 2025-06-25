@@ -494,36 +494,42 @@ local function farmRocks(neededDurabilityValue)
     end
 end
 
-local jungleToggle = Tabs.Rocks:CreateToggle({
-    Name = "Jungle Rock (10M)",
-    CurrentValue = false,
-    Flag = "JungleRockToggle",
-    Callback = function(state)
-        _G.fastHitActive = state
-        getgenv().autoFarm = state
+-- Create the toggle with Fluent Renewed syntax
+local JungleToggle = Tabs.Rocks:CreateToggle("JungleRockToggle", {
+    Title = "Jungle Rock (10M)",
+    Default = false
+})
 
-        if state then
-            coroutine.wrap(function()
-                while _G.fastHitActive do
-                    local character = player.Character
-                    if character then
-                        for _ = 1, 10 do
-                            gettool()
-                            farmRocks(10000000)
-                        end
+-- Use OnChanged to handle toggle changes
+JungleToggle:OnChanged(function()
+    local state = Options.JungleRockToggle.Value
+    _G.fastHitActive = state
+    getgenv().autoFarm = state
+
+    if state then
+        coroutine.wrap(function()
+            while _G.fastHitActive do
+                local character = player.Character
+                if character then
+                    for _ = 1, 10 do
+                        gettool()
+                        farmRocks(10000000)
                     end
-                    task.wait(0.1)
                 end
-            end)()
-        else
-            local character = player.Character
-            local equipped = character and character:FindFirstChild("Punch")
-            if equipped then
-                equipped.Parent = player.Backpack
+                task.wait(0.1)
             end
+        end)()
+    else
+        local character = player.Character
+        local equipped = character and character:FindFirstChild("Punch")
+        if equipped then
+            equipped.Parent = player.Backpack
         end
     end
-})
+end)
+
+-- You can also set the toggle state programmatically like this:
+Options.JungleRockToggle:SetValue(false)
 
 -- Auto Punch Toggle (No Animation)
 local Toggle = Tabs.Killing:CreateToggle("AutoPunchNoAnim", {Title = "Auto Punch (No Anim)", Default = false})
