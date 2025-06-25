@@ -578,25 +578,8 @@ Tabs.Killing:CreateButton({
     end
 })
 
--- Whitelist Table
 local whitelist = {}
 
-Tabs.Killing:CreateInput("WhitelistBox", {
-    Title = "Whitelist Player",
-    Default = "",
-    Placeholder = "Enter username...",
-    Numeric = false,
-    Callback = function(text)
-        local target = game.Players:FindFirstChild(text)
-        if target then
-            whitelist[target.Name] = true
-        end
-    end
-})
-
-local whitelist = {}
-
--- Get current players
 local function getPlayerNames()
     local names = {}
     for _, player in ipairs(game.Players:GetPlayers()) do
@@ -605,43 +588,40 @@ local function getPlayerNames()
     return names
 end
 
--- Create dropdown with player names
 local WhitelostPlayerDropdown = Tabs.Killing:CreateDropdown("WhitelistDropdown", {
     Title = "Whitelist Player",
     Values = getPlayerNames(),
-    Multi = false,
+    Multi = true,
     Default = 1,
 })
 
--- When selection changes, add to whitelist
-Dropdown:OnChanged(function(Value)
-    if Value then
-        whitelist[Value] = true
-        print("Whitelisted:", Value)
+WhitelostPlayerDropdown:OnChanged(function(Value)
+    if typeof(Value) == "table" then
+        for _, name in ipairs(Value) do
+            whitelist[name] = true
+            print("Whitelisted:", name)
+        end
     end
 end)
 
--- Optional: Auto-update dropdown if players join/leave
-game.Players.PlayerAdded:Connect(function()
-    Dropdown:SetValues(getPlayerNames())
-end)
+local function refreshDropdown()
+    local selected = WhitelostPlayerDropdown.Value or {}
+    WhitelostPlayerDropdown:SetValues(getPlayerNames())
+    WhitelostPlayerDropdown:SetValue(selected)
+end
 
-game.Players.PlayerRemoving:Connect(function()
-    Dropdown:SetValues(getPlayerNames())
-end)
+game.Players.PlayerAdded:Connect(refreshDropdown)
+game.Players.PlayerRemoving:Connect(refreshDropdown)
 
--- Auto Kill Toggle
 local Toggle = Tabs.Killing:CreateToggle("AutoKill", {Title = "Auto Kill", Default = false})
 Toggle:OnChanged(function(state)
     while state and Toggle.Value do
         local player = game.Players.LocalPlayer
-
         for _, target in ipairs(game.Players:GetPlayers()) do
             if target ~= player and not whitelist[target.Name] then
                 local root = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
                 local rHand = player.Character and player.Character:FindFirstChild("RightHand")
                 local lHand = player.Character and player.Character:FindFirstChild("LeftHand")
-
                 if root and rHand and lHand then
                     firetouchinterest(rHand, root, 1)
                     firetouchinterest(lHand, root, 1)
