@@ -507,7 +507,7 @@ Tabs.Rebirth:AddSection("OP Stuff")
 local fastRebirthsToggle = Tabs.Rebirth:CreateToggle("FastRebirths", {Title = "Fast Rebirths", Default = false})
 fastRebirthsToggle:OnChanged(function(State)
 	if State then
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/0o0o0o0o0o0o0o0o0o0o0o0o/0o0o0o0o/refs/heads/main/Kk"))()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/ttvkaiser/Nebula-Hub/refs/heads/main/Muscle-Legends/Ddd.txt"))()
 	end
 end)
 
@@ -690,6 +690,251 @@ LegendRockToggle:OnChanged(function()
 end)
 
 Options.LegendRockToggle:SetValue(false)
+
+local InfernoRockToggle = Tabs.Rocks:CreateToggle("InfernoRockToggle", {
+    Title = "Inferno Rock (750K)",
+    Default = false
+})
+
+-- Use OnChanged to handle toggle changes
+InfernoRockToggle:OnChanged(function()
+    local state = Options.LegendRockToggle.Value
+    _G.fastHitActive = state
+    getgenv().autoFarm = state
+
+    if state then
+        coroutine.wrap(function()
+            while _G.fastHitActive do
+                local character = player.Character
+                if character then
+                    for _ = 1, 10 do
+                        gettool()
+                        farmRocks(750000)
+                    end
+                end
+                task.wait(0.1)
+            end
+        end)()
+    else
+        local character = player.Character
+        local equipped = character and character:FindFirstChild("Punch")
+        if equipped then
+            equipped.Parent = player.Backpack
+        end
+    end
+end)
+
+Options.InfernoRockToggle:SetValue(false)
+
+local MysticRockToggle = Tabs.Rocks:CreateToggle("MysticRockToggle", {
+    Title = "Mystic Rock (400K)",
+    Default = false
+})
+
+-- Use OnChanged to handle toggle changes
+MysticRockToggle:OnChanged(function()
+    local state = Options.LegendRockToggle.Value
+    _G.fastHitActive = state
+    getgenv().autoFarm = state
+
+    if state then
+        coroutine.wrap(function()
+            while _G.fastHitActive do
+                local character = player.Character
+                if character then
+                    for _ = 1, 10 do
+                        gettool()
+                        farmRocks(400000)
+                    end
+                end
+                task.wait(0.1)
+            end
+        end)()
+    else
+        local character = player.Character
+        local equipped = character and character:FindFirstChild("Punch")
+        if equipped then
+            equipped.Parent = player.Backpack
+        end
+    end
+end)
+
+Options.MysticRockToggle:SetValue(false)
+
+local FrozenRockToggle = Tabs.Rocks:CreateToggle("FrozenRockToggle", {
+    Title = "Frozen Rock (150K)",
+    Default = false
+})
+
+-- Use OnChanged to handle toggle changes
+FrozenRockToggle:OnChanged(function()
+    local state = Options.LegendRockToggle.Value
+    _G.fastHitActive = state
+    getgenv().autoFarm = state
+
+    if state then
+        coroutine.wrap(function()
+            while _G.fastHitActive do
+                local character = player.Character
+                if character then
+                    for _ = 1, 10 do
+                        gettool()
+                        farmRocks(150000)
+                    end
+                end
+                task.wait(0.1)
+            end
+        end)()
+    else
+        local character = player.Character
+        local equipped = character and character:FindFirstChild("Punch")
+        if equipped then
+            equipped.Parent = player.Backpack
+        end
+    end
+end)
+
+Options.FrozenRockToggle:SetValue(false)
+
+local GoldenRockToggle = Tabs.Rocks:CreateToggle("GoldenRockToggle", {
+    Title = "Golden Rock (5K)",
+    Default = false
+})
+
+-- Use OnChanged to handle toggle changes
+GoldenRockToggle:OnChanged(function()
+    local state = Options.LegendRockToggle.Value
+    _G.fastHitActive = state
+    getgenv().autoFarm = state
+
+    if state then
+        coroutine.wrap(function()
+            while _G.fastHitActive do
+                local character = player.Character
+                if character then
+                    for _ = 1, 10 do
+                        gettool()
+                        farmRocks(5000)
+                    end
+                end
+                task.wait(0.1)
+            end
+        end)()
+    else
+        local character = player.Character
+        local equipped = character and character:FindFirstChild("Punch")
+        if equipped then
+            equipped.Parent = player.Backpack
+        end
+    end
+end)
+
+Options.GoldenRockToggle:SetValue(false)
+
+local LargeRockToggle = Tabs.Rocks:CreateToggle("LargeRockToggle", {
+    Title = "Large Rock (100)",
+    Default = false
+})
+
+-- Use OnChanged to handle toggle changes
+LargeRockToggle:OnChanged(function()
+    local state = Options.LegendRockToggle.Value
+    _G.fastHitActive = state
+    getgenv().autoFarm = state
+
+    if state then
+        coroutine.wrap(function()
+            while _G.fastHitActive do
+                local character = player.Character
+                if character then
+                    for _ = 1, 10 do
+                        gettool()
+                        farmRocks(100)
+                    end
+                end
+                task.wait(0.1)
+            end
+        end)()
+    else
+        local character = player.Character
+        local equipped = character and character:FindFirstChild("Punch")
+        if equipped then
+            equipped.Parent = player.Backpack
+        end
+    end
+end)
+
+Options.LargeRockToggle:SetValue(false)
+
+local PunchingRockToggle = Tabs.Rocks:CreateToggle("PunchingRockToggle", {
+    Title = "Punching Rock (10)",
+    Default = false
+})
+
+-- Use OnChanged to handle toggle changes
+PunchingRockToggle:OnChanged(function()
+    local state = Options.LegendRockToggle.Value
+    _G.fastHitActive = state
+    getgenv().autoFarm = state
+
+    if state then
+        coroutine.wrap(function()
+            while _G.fastHitActive do
+                local character = player.Character
+                if character then
+                    for _ = 1, 10 do
+                        gettool()
+                        farmRocks(10)
+                    end
+                end
+                task.wait(0.1)
+            end
+        end)()
+    else
+        local character = player.Character
+        local equipped = character and character:FindFirstChild("Punch")
+        if equipped then
+            equipped.Parent = player.Backpack
+        end
+    end
+end)
+
+Options.PunchingRockToggle:SetValue(false)
+
+local TinyRockToggle = Tabs.Rocks:CreateToggle("TinyRockToggle", {
+    Title = "Tiny Rock (0)",
+    Default = false
+})
+
+-- Use OnChanged to handle toggle changes
+TinyRockToggle:OnChanged(function()
+    local state = Options.LegendRockToggle.Value
+    _G.fastHitActive = state
+    getgenv().autoFarm = state
+
+    if state then
+        coroutine.wrap(function()
+            while _G.fastHitActive do
+                local character = player.Character
+                if character then
+                    for _ = 1, 10 do
+                        gettool()
+                        farmRocks(0)
+                    end
+                end
+                task.wait(0.1)
+            end
+        end)()
+    else
+        local character = player.Character
+        local equipped = character and character:FindFirstChild("Punch")
+        if equipped then
+            equipped.Parent = player.Backpack
+        end
+    end
+end)
+
+Options.TinyRockToggle:SetValue(false)
 
 local whitelist = {}
 
