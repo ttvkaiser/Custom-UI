@@ -3,7 +3,7 @@ local SaveManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.
 local InterfaceManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/InterfaceManager.luau"))()
  
 local Window = Library:CreateWindow{
-    Title = "Nebula Hub | Game: Muscle Legends | Version [v.1.0.1]",
+    Title = "Nebula Hub | Game: Muscle Legends | Version [v.1.9.5]",
     SubTitle = "by ttvkaiser",
     TabWidth = 160,
     Size = UDim2.fromOffset(1087, 690.5),
@@ -405,74 +405,6 @@ autoJoinToggle:OnChanged(function()
         end)
     end
 end)
-
-local RB = {}
-RB.__index = RB
-
-function RB.new(tab)
-    local self = setmetatable({}, RB)
-    self.tab = Rebirth
-    self:setupUI()
-    return self
-end
-
-function RB:setupUI()
-    -- Input for rebirth target
-    self.tab:CreateInput("TargetRebirths", {
-        Title = "Target Rebirths",
-        Default = "1",
-        Placeholder = "Enter number",
-        Numeric = true,
-        Finished = false,
-        Callback = function(value)
-            -- Optional: Validation feedback or print
-            print("Target set to:", value)
-        end
-    })
-
-    -- Toggle for auto rebirth
-    local toggle = self.tab:CreateToggle("AutoRebirth", {
-        Title = "Auto Rebirth (Target)",
-        Default = false
-    })
-
-    toggle:OnChanged(function()
-        if Options.AutoRebirth.Value then
-            self:startRebirthLoop()
-        end
-    end)
-end
-
-function RB:startRebirthLoop()
-    task.spawn(function()
-        local player = game.Players.LocalPlayer
-        local leaderstats = player:WaitForChild("leaderstats")
-        local rebirths = leaderstats:WaitForChild("Rebirths")
-        local remote = game.ReplicatedStorage:WaitForChild("rEvents"):WaitForChild("rebirthRemote")
-
-        while Options.AutoRebirth.Value do
-            local target = tonumber(Options.TargetRebirths.Value) or 1
-
-            if rebirths.Value >= target then
-                print("🎯 Target rebirths reached!")
-                Options.AutoRebirth:SetValue(false)
-                break
-            end
-
-            local success, err = pcall(function()
-                remote:InvokeServer("rebirthRequest")
-            end)
-
-            if not success then
-                warn("⚠️ Rebirth failed:", err)
-            end
-
-            task.wait(1)
-        end
-    end)
-end
-
-return RB
 
 -- Auto Rebirth (Normal)
 local autoRebirthToggle = Tabs.Rebirth:CreateToggle("AutoRebirth", {Title = "Auto Rebirth (Normal)", Default = false})
