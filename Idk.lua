@@ -3,7 +3,7 @@ local SaveManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.
 local InterfaceManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/InterfaceManager.luau"))()
  
 local Window = Library:CreateWindow{
-    Title = "Nebula Hub | Game: Muscle Legends | Version [v.1.9.5]",
+    Title = "Nebula Hub | Game: Muscle Legends | Version [v.2.1.7]",
     SubTitle = "by ttvkaiser",
     TabWidth = 160,
     Size = UDim2.fromOffset(1087, 690.5),
@@ -43,6 +43,10 @@ local Tabs = {
 	Status = Window:CreateTab{
         Title = "Status",
         Icon = "circle-plus"
+    },
+	Crystal = Window:CreateTab{
+        Title = "Crystal",
+        Icon = "gem"
     },
 	Misc = Window:CreateTab{
         Title = "Misc",
@@ -273,46 +277,12 @@ Toggle:OnChanged(function(state)
     end
 end)
 
-Tabs.Main:AddSection("Auto Jungle")
+Tabs.Main:AddSection("Auto Gym")
 
-local jungleBenchToggle = Tabs.Main:CreateToggle("JungleBench", {Title = "Auto Jungle Bench", Default = false})
-jungleBenchToggle:OnChanged(function(State)
-    if State then
-        task.spawn(function()
-            while jungleBenchToggle.Value do
-                game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(-8629.88086, 64.8842468, 1855.03467))
-                game:GetService("ReplicatedStorage").rEvents.machineInteractRemote:InvokeServer("useMachine", workspace.machinesFolder["Jungle Bench"].interactSeat)
-                task.wait(0.1)
-            end
-        end)
-    end
-end)
-
-local jungleBarToggle = Tabs.Main:CreateToggle("JungleBar", {Title = "Auto Jungle Bar Lift", Default = false})
-jungleBarToggle:OnChanged(function(State)
-    if State then
-        task.spawn(function()
-            while jungleBarToggle.Value do
-                game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(-8678.05566, 14.5030098, 2089.25977))
-                game:GetService("ReplicatedStorage").rEvents.machineInteractRemote:InvokeServer("useMachine", workspace.machinesFolder["Jungle Bar Lift"].interactSeat)
-                task.wait(0.1)
-            end
-        end)
-    end
-end)
-
-local jungleSquatToggle = Tabs.Main:CreateToggle("JungleSquat", {Title = "Auto Jungle Squat", Default = false})
-jungleSquatToggle:OnChanged(function(State)
-    if State then
-        task.spawn(function()
-            while jungleSquatToggle.Value do
-                game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(-8374.25586, 34.5933418, 2932.44995))
-                game:GetService("ReplicatedStorage").rEvents.machineInteractRemote:InvokeServer("useMachine", workspace.machinesFolder["Jungle Squat"].interactSeat)
-                task.wait(0.1)
-            end
-        end)
-    end
-end)
+local Paragraph = Tabs.Main:CreateParagraph("Paragraph", {
+    Title = "⟨⟨EMPTY⟩⟩",
+    Content = ""
+})
 
 Tabs.Main:AddSection("Auto Equip")
 
@@ -923,6 +893,55 @@ local function createMyParagraphStats()
 end
 
 createMyParagraphStats()
+
+local selectedCrystal = "Galaxy Oracle Crystal"
+local autoCrystalRunning = false
+
+-- Crystal names
+local crystalNames = {
+    "Blue Crystal", "Green Crystal", "Frozen Crystal", "Mythical Crystal",
+    "Inferno Crystal", "Legends Crystal", "Muscle Elite Crystal",
+    "Galaxy Oracle Crystal", "Sky Eclipse Crystal", "Jungle Crystal"
+}
+
+-- Create Dropdown
+local CrystalDropdown = Tabs.Crystal:CreateDropdown("CrystalDropdown", {
+    Title = "Select Crystal",
+    Values = crystalNames,
+    Multi = false,
+    Default = table.find(crystalNames, selectedCrystal) or 1,
+})
+
+CrystalDropdown:OnChanged(function(value)
+    selectedCrystal = value
+    print("[Nebula Hub] Selected Crystal:", value)
+end)
+
+-- Function to auto open crystal
+local function autoOpenCrystal()
+    while autoCrystalRunning do
+        pcall(function()
+            game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("openCrystalRemote"):InvokeServer("openCrystal", selectedCrystal)
+        end)
+        task.wait(0.1)
+    end
+end
+
+-- Create Toggle
+local CrystalToggle = Tabs.Crystal:CreateToggle("AutoCrystalToggle", {
+    Title = "Auto Crystal",
+    Default = false,
+})
+
+CrystalToggle:OnChanged(function()
+    autoCrystalRunning = Options.AutoCrystalToggle.Value
+
+    if autoCrystalRunning then
+        task.spawn(autoOpenCrystal)
+    else
+        print("[Nebula Hub] Auto Crystal stopped.")
+    end
+end)
 
 -- Permanent Shift Lock Button
 Tabs.Misc:CreateButton({
