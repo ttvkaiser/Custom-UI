@@ -531,52 +531,75 @@ end)
 -- You can also set the toggle state programmatically like this:
 Options.JungleRockToggle:SetValue(false)
 
--- Auto Punch Toggle (No Animation)
-local Toggle = Tabs.Killing:CreateToggle("AutoPunchNoAnim", {Title = "Auto Punch (No Anim)", Default = false})
-Toggle:OnChanged(function(state)
-    while state and Toggle.Value do
-        local player = game.Players.LocalPlayer
-        local char = game.Workspace:FindFirstChild(player.Name)
-        local punchTool = player.Backpack:FindFirstChild("Punch") or (char and char:FindFirstChild("Punch"))
+local MuscleKingRockToggle = Tabs.Rocks:CreateToggle("MuscleKingRockToggle", {
+    Title = "Muscle King Rock (5M)",
+    Default = false
+})
 
-        if punchTool then
-            if punchTool.Parent ~= char then
-                punchTool.Parent = char -- Equip
+-- Use OnChanged to handle toggle changes
+MuscleKingRockToggle:OnChanged(function()
+    local state = Options.MuscleKingRockToggle.Value
+    _G.fastHitActive = state
+    getgenv().autoFarm = state
+
+    if state then
+        coroutine.wrap(function()
+            while _G.fastHitActive do
+                local character = player.Character
+                if character then
+                    for _ = 1, 10 do
+                        gettool()
+                        farmRocks(5000000)
+                    end
+                end
+                task.wait(0.1)
             end
-
-            player.muscleEvent:FireServer("punch", "rightHand")
-            player.muscleEvent:FireServer("punch", "leftHand")
-        else
-            warn("Punch tool not found")
-            Toggle:SetValue(false) -- Stop if tool not found
+        end)()
+    else
+        local character = player.Character
+        local equipped = character and character:FindFirstChild("Punch")
+        if equipped then
+            equipped.Parent = player.Backpack
         end
-        task.wait()
     end
 end)
 
--- Speed Punch Button
-Tabs.Killing:CreateButton({
-    Title = "Fast Punch",
-    Callback = function()
-        local player = game.Players.LocalPlayer
-        local punch = player.Backpack:FindFirstChild("Punch") or (game.Workspace:FindFirstChild(player.Name) and game.Workspace[player.Name]:FindFirstChild("Punch"))
-        if punch and punch:FindFirstChild("attackTime") then
-            punch.attackTime.Value = 0
-        end
-    end
+Options.MuscleKingRockToggle:SetValue(false)
+
+local LegendRockToggle = Tabs.Rocks:CreateToggle("LegendRockToggle", {
+    Title = "Legend Rock (1M)",
+    Default = false
 })
 
--- Normal Punch Button
-Tabs.Killing:CreateButton({
-    Title = "Normal Punch",
-    Callback = function()
-        local player = game.Players.LocalPlayer
-        local punch = player.Backpack:FindFirstChild("Punch") or (game.Workspace:FindFirstChild(player.Name) and game.Workspace[player.Name]:FindFirstChild("Punch"))
-        if punch and punch:FindFirstChild("attackTime") then
-            punch.attackTime.Value = 0.35
+-- Use OnChanged to handle toggle changes
+LegendRockToggle:OnChanged(function()
+    local state = Options.LegendRockToggle.Value
+    _G.fastHitActive = state
+    getgenv().autoFarm = state
+
+    if state then
+        coroutine.wrap(function()
+            while _G.fastHitActive do
+                local character = player.Character
+                if character then
+                    for _ = 1, 10 do
+                        gettool()
+                        farmRocks(1000000)
+                    end
+                end
+                task.wait(0.1)
+            end
+        end)()
+    else
+        local character = player.Character
+        local equipped = character and character:FindFirstChild("Punch")
+        if equipped then
+            equipped.Parent = player.Backpack
         end
     end
-})
+end)
+
+Options.LegendRockToggle:SetValue(false)
 
 local whitelist = {}
 
