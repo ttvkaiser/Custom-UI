@@ -360,13 +360,119 @@ equipHandstandToggle:OnChanged(function(State)
     if State then
         task.spawn(function()
             while equipHandstandToggle.Value do
-                local tool = game.Players.LocalPlayer.Backpack:FindFirstChild("Handstand")
+                local tool = game.Players.LocalPlayer.Backpack:FindFirstChild("Handstands")
                 if tool then tool.Parent = game.Players.LocalPlayer.Character end
                 task.wait(0.1)
             end
         end)
     end
 end)
+
+Tabs.Main:AddSection("Brawl")
+
+-- God Mode (Brawl) Toggle
+local godModeToggle = Tabs.Main:CreateToggle("GodModeBrawl", {
+    Title = "God Mode (Brawl)",
+    Default = false
+})
+
+godModeToggle:OnChanged(function()
+    local state = Options.GodModeBrawl.Value
+    if state then
+        task.spawn(function()
+            while Options.GodModeBrawl.Value do
+                game:GetService("ReplicatedStorage").rEvents.brawlEvent:FireServer("joinBrawl")
+                task.wait(0)
+            end
+        end)
+    end
+end)
+
+-- Auto Join Brawl Toggle
+local autoJoinToggle = Tabs.Main:CreateToggle("AutoJoinBrawl", {
+    Title = "Auto Join Brawl",
+    Default = false
+})
+
+autoJoinToggle:OnChanged(function()
+    local state = Options.AutoJoinBrawl.Value
+    if state then
+        task.spawn(function()
+            while Options.AutoJoinBrawl.Value do
+                game:GetService("ReplicatedStorage").rEvents.brawlEvent:FireServer("joinBrawl")
+                task.wait(2)
+            end
+        end)
+    end
+end)
+
+local RB = {}
+RB.__index = RB
+
+function RB.new(tab)
+    local self = setmetatable({}, RB)
+    self.tab = Rebirth
+    self:setupUI()
+    return self
+end
+
+function RB:setupUI()
+    -- Input for rebirth target
+    self.tab:CreateInput("TargetRebirths", {
+        Title = "Target Rebirths",
+        Default = "1",
+        Placeholder = "Enter number",
+        Numeric = true,
+        Finished = false,
+        Callback = function(value)
+            -- Optional: Validation feedback or print
+            print("Target set to:", value)
+        end
+    })
+
+    -- Toggle for auto rebirth
+    local toggle = self.tab:CreateToggle("AutoRebirth", {
+        Title = "Auto Rebirth (Target)",
+        Default = false
+    })
+
+    toggle:OnChanged(function()
+        if Options.AutoRebirth.Value then
+            self:startRebirthLoop()
+        end
+    end)
+end
+
+function RB:startRebirthLoop()
+    task.spawn(function()
+        local player = game.Players.LocalPlayer
+        local leaderstats = player:WaitForChild("leaderstats")
+        local rebirths = leaderstats:WaitForChild("Rebirths")
+        local remote = game.ReplicatedStorage:WaitForChild("rEvents"):WaitForChild("rebirthRemote")
+
+        while Options.AutoRebirth.Value do
+            local target = tonumber(Options.TargetRebirths.Value) or 1
+
+            if rebirths.Value >= target then
+                print("🎯 Target rebirths reached!")
+                Options.AutoRebirth:SetValue(false)
+                break
+            end
+
+            local success, err = pcall(function()
+                remote:InvokeServer("rebirthRequest")
+            end)
+
+            if not success then
+                warn("⚠️ Rebirth failed:", err)
+            end
+
+            task.wait(1)
+        end
+    end)
+end
+
+return RB
 
 -- Auto Rebirth (Normal)
 local autoRebirthToggle = Tabs.Rebirth:CreateToggle("AutoRebirth", {Title = "Auto Rebirth (Normal)", Default = false})
