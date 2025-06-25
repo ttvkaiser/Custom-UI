@@ -588,14 +588,22 @@ local function getPlayerNames()
     return names
 end
 
-local WhitelostPlayerDropdown = Tabs.Killing:CreateDropdown("WhitelistDropdown", {
+-- Wait for at least one player to exist before creating UI
+if #game.Players:GetPlayers() == 0 then
+    game.Players.PlayerAdded:Wait()
+end
+
+local WhitelistDropdown = Tabs.Killing:CreateDropdown({
+    Name = "WhitelistDropdown",
     Title = "Whitelist Player",
     Values = getPlayerNames(),
     Multi = true,
     Default = 1,
 })
 
-WhitelostPlayerDropdown:OnChanged(function(Value)
+print("Dropdown values:", table.concat(getPlayerNames(), ", "))
+
+WhitelistDropdown:OnChanged(function(Value)
     if typeof(Value) == "table" then
         for _, name in ipairs(Value) do
             whitelist[name] = true
@@ -604,16 +612,16 @@ WhitelostPlayerDropdown:OnChanged(function(Value)
     end
 end)
 
-local function refreshDropdown()
-    local selected = WhitelostPlayerDropdown.Value or {}
-    WhitelostPlayerDropdown:SetValues(getPlayerNames())
-    WhitelostPlayerDropdown:SetValue(selected)
-end
+game.Players.PlayerAdded:Connect(function()
+    WhitelistDropdown:SetValues(getPlayerNames())
+end)
 
-game.Players.PlayerAdded:Connect(refreshDropdown)
-game.Players.PlayerRemoving:Connect(refreshDropdown)
+game.Players.PlayerRemoving:Connect(function()
+    WhitelistDropdown:SetValues(getPlayerNames())
+end)
 
-local Toggle = Tabs.Killing:CreateToggle("AutoKill", {Title = "Auto Kill", Default = false})
+local Toggle = Tabs.Killing:CreateToggle("AutoKilltoggle", {Title = "Auto Kill", Default = false })
+
 Toggle:OnChanged(function(state)
     while state and Toggle.Value do
         local player = game.Players.LocalPlayer
@@ -622,6 +630,7 @@ Toggle:OnChanged(function(state)
                 local root = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
                 local rHand = player.Character and player.Character:FindFirstChild("RightHand")
                 local lHand = player.Character and player.Character:FindFirstChild("LeftHand")
+
                 if root and rHand and lHand then
                     firetouchinterest(rHand, root, 1)
                     firetouchinterest(lHand, root, 1)
