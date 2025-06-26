@@ -698,7 +698,7 @@ local InfernoRockToggle = Tabs.Rocks:CreateToggle("InfernoRockToggle", {
 
 -- Use OnChanged to handle toggle changes
 InfernoRockToggle:OnChanged(function()
-    local state = Options.LegendRockToggle.Value
+    local state = Options.InfernoRockToggle.Value
     _G.fastHitActive = state
     getgenv().autoFarm = state
 
@@ -733,7 +733,7 @@ local MysticRockToggle = Tabs.Rocks:CreateToggle("MysticRockToggle", {
 
 -- Use OnChanged to handle toggle changes
 MysticRockToggle:OnChanged(function()
-    local state = Options.LegendRockToggle.Value
+    local state = Options.MysticRockToggle.Value
     _G.fastHitActive = state
     getgenv().autoFarm = state
 
@@ -768,7 +768,7 @@ local FrozenRockToggle = Tabs.Rocks:CreateToggle("FrozenRockToggle", {
 
 -- Use OnChanged to handle toggle changes
 FrozenRockToggle:OnChanged(function()
-    local state = Options.LegendRockToggle.Value
+    local state = Options.FrozenRockToggle.Value
     _G.fastHitActive = state
     getgenv().autoFarm = state
 
@@ -803,7 +803,7 @@ local GoldenRockToggle = Tabs.Rocks:CreateToggle("GoldenRockToggle", {
 
 -- Use OnChanged to handle toggle changes
 GoldenRockToggle:OnChanged(function()
-    local state = Options.LegendRockToggle.Value
+    local state = Options.GoldenRockToggle.Value
     _G.fastHitActive = state
     getgenv().autoFarm = state
 
@@ -838,7 +838,7 @@ local LargeRockToggle = Tabs.Rocks:CreateToggle("LargeRockToggle", {
 
 -- Use OnChanged to handle toggle changes
 LargeRockToggle:OnChanged(function()
-    local state = Options.LegendRockToggle.Value
+    local state = Options.LargeRockToggle.Value
     _G.fastHitActive = state
     getgenv().autoFarm = state
 
@@ -873,7 +873,7 @@ local PunchingRockToggle = Tabs.Rocks:CreateToggle("PunchingRockToggle", {
 
 -- Use OnChanged to handle toggle changes
 PunchingRockToggle:OnChanged(function()
-    local state = Options.LegendRockToggle.Value
+    local state = Options.PunchingRockToggle.Value
     _G.fastHitActive = state
     getgenv().autoFarm = state
 
